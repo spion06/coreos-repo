@@ -1,5 +1,12 @@
 #cloud-config
 
+users:
+  - name: spion
+    passwd: $6$XSIecDzlB5KiA2$SZJnGlBgc.o1Af1JyIHrzxP4pJqF2vAEZDNzXuf1p.ry97fr8dIYj38mGUwrKlV9xJ/2ZyQAguws9oeR2Tf4G/
+    groups:
+      - sudo
+      - docker
+    coreos-ssh-import-github: spion06
 coreos:
     units:
       - name: etcd.service
