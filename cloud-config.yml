@@ -4,7 +4,7 @@ coreos:
     units:
       - name: etcd.service
         command: start
-      - name: zfs.mount
+      - name: mnt-zfspool.mount
         command: start
         content: |
           [Mount]
