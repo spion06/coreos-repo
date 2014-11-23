@@ -4,6 +4,8 @@ coreos:
     units:
       - name: etcd.service
         command: start
+      - name: rpc-statd.service
+        command: start
       - name: mnt-zfspool.mount
         command: start
         content: |
@@ -11,3 +13,73 @@ coreos:
           What=192.168.10.10:/mnt/zfspool
           Where=/mnt/zfspool
           Type=nfs
+      - name: 10-static.network
+        runtime: true
+        content: |
+          [Match]
+          Name=enp2s0
+          
+          [Network]
+          DNS=192.168.10.1
+          Address=192.168.10.25/24
+          Gateway=192.168.10.1
+      - name: sabnzbd.service
+        command: start
+        content: |
+          [Unit]
+          Description=sabnzbd container
+          Author=Me
+          After=docker.service
+          After=mnt-zfspool.mount
+          
+          [Service]
+          Restart=always
+          TimeoutStartSec=0
+          ExecStartPre=-/usr/bin/docker kill sabnzbd
+          ExecStartPre=-/usr/bin/docker rm sabnzbd
+          ExecStartPre=/usr/bin/docker pull timhaak/sabnzbd
+          ExecStart=/usr/bin/docker run --name=sabnzbd -h sabnzbd -v /mnt/zfspool/configs/sabnzbd:/config -v /mnt/zfspool:/mnt/zfspool -p 8080:8080 -p 9090:9090 timhaak/sabnzbd
+          ExecStop=/usr/bin/docker stop -t 2 sabnzbd
+          
+          [Install]
+          WantedBy=multi-user.target
+      - name: sickbeard.service
+        command: start
+        content: |
+          [Unit]
+          Description=sickbeard container
+          Author=Me
+          After=docker.service
+          After=mnt-zfspool.mount
+          
+          [Service]
+          Restart=always
+          TimeoutStartSec=0
+          ExecStartPre=-/usr/bin/docker kill sickbeard
+          ExecStartPre=-/usr/bin/docker rm sickbeard
+          ExecStartPre=/usr/bin/docker pull timhaak/sickbeard
+          ExecStart=/usr/bin/docker run --name=sickbeard -h sickbeard -v /mnt/zfspool/configs/sickbeard:/config -v /mnt/zfspool:/mnt/zfspool -p 8081:8081 timhaak/sickbeard
+          ExecStop=/usr/bin/docker stop -t 2 sickbeard
+          
+          [Install]
+          WantedBy=multi-user.target
+      - name: couchpotato.service
+        command: start
+        content: |
+          [Unit]
+          Description=couchpotato container
+          Author=Me
+          After=docker.service
+          After=mnt-zfspool.mount
+          
+          [Service]
+          Restart=always
+          TimeoutStartSec=0
+          ExecStartPre=-/usr/bin/docker kill couchpotato
+          ExecStartPre=-/usr/bin/docker rm couchpotato
+          ExecStartPre=/usr/bin/docker pull needo/couchpotato
+          ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
+          ExecStop=/usr/bin/docker stop -t 2 couchpotato
+          
+          [Install]
+          WantedBy=multi-user.target
