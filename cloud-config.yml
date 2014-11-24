@@ -104,7 +104,7 @@ coreos:
           TimeoutStartSec=0
           ExecStartPre=-/usr/bin/docker kill openvpn
           ExecStartPre=-/usr/bin/docker rm openvpn
-          ExecStartPre=/usr/bin/docker pull needo/openvpn
+          ExecStartPre=/usr/bin/docker pull jpetazzo/openvpn
           ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
           ExecStop=/usr/bin/docker stop -t 2 openvpn
           
