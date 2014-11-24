@@ -12,8 +12,10 @@ coreos:
       - name: etcd.service
         command: start
       - name: rpc-statd.service
+        runtime: true
         command: start
       - name: mnt-zfspool.mount
+        runtime: true
         command: start
         content: |
           [Mount]
@@ -31,6 +33,7 @@ coreos:
           Address=192.168.10.25/24
           Gateway=192.168.10.1
       - name: sabnzbd.service
+        runtime: true
         command: start
         content: |
           [Unit]
@@ -51,6 +54,7 @@ coreos:
           [Install]
           WantedBy=multi-user.target
       - name: sickbeard.service
+        runtime: true
         command: start
         content: |
           [Unit]
@@ -71,6 +75,7 @@ coreos:
           [Install]
           WantedBy=multi-user.target
       - name: couchpotato.service
+        runtime: true
         command: start
         content: |
           [Unit]
@@ -91,6 +96,7 @@ coreos:
           [Install]
           WantedBy=multi-user.target
       - name: openvpn.service
+        runtime: true
         command: start
         content: |
           [Unit]
