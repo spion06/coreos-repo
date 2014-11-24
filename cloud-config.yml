@@ -45,7 +45,7 @@ coreos:
           ExecStartPre=-/usr/bin/docker kill sabnzbd
           ExecStartPre=-/usr/bin/docker rm sabnzbd
           ExecStartPre=/usr/bin/docker pull timhaak/sabnzbd
-          ExecStart=/usr/bin/docker run --name=sabnzbd -h sabnzbd -v /mnt/zfspool/configs/sabnzbd:/config -v /mnt/zfspool:/mnt/zfspool -p 8080:8080 -p 9090:9090 timhaak/sabnzbd
+          ExecStart=/usr/bin/docker run --cpuset="0-3" -e "PATH=/config/par2_custom:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" --name=sabnzbd -h sabnzbd -v /mnt/zfspool/configs/sabnzbd:/config -v /mnt/zfspool:/mnt/zfspool -p 8080:8080 -p 9090:9090 timhaak/sabnzbd
           ExecStop=/usr/bin/docker stop -t 2 sabnzbd
           
           [Install]
@@ -87,6 +87,26 @@ coreos:
           ExecStartPre=/usr/bin/docker pull needo/couchpotato
           ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
           ExecStop=/usr/bin/docker stop -t 2 couchpotato
+          
+          [Install]
+          WantedBy=multi-user.target
+      - name: openvpn.service
+        command: start
+        content: |
+          [Unit]
+          Description=openvpn container
+          Author=Me
+          After=docker.service
+          After=mnt-zfspool.mount
+          
+          [Service]
+          Restart=always
+          TimeoutStartSec=0
+          ExecStartPre=-/usr/bin/docker kill openvpn
+          ExecStartPre=-/usr/bin/docker rm openvpn
+          ExecStartPre=/usr/bin/docker pull needo/openvpn
+          ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
+          ExecStop=/usr/bin/docker stop -t 2 openvpn
           
           [Install]
           WantedBy=multi-user.target
