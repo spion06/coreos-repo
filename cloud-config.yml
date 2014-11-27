@@ -22,6 +22,14 @@ coreos:
           What=192.168.10.10:/mnt/zfspool
           Where=/mnt/zfspool
           Type=nfs
+      - name: mnt-configs.mount
+        runtime: true
+        command: start
+        content: |
+          [Mount]
+          What=192.168.10.10:/mnt/zfspool/configs
+          Where=/mnt/configs
+          Type=nfs
       - name: 10-static.network
         runtime: true
         content: |
