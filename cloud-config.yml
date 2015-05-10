@@ -8,119 +8,121 @@ users:
       - docker
     coreos-ssh-import-github: spion06
 coreos:
-    units:
-      - name: etcd.service
-        command: start
-      - name: rpc-statd.service
-        runtime: true
-        command: start
-      - name: mnt-zfspool.mount
-        runtime: true
-        command: start
-        content: |
-          [Mount]
-          What=192.168.10.10:/mnt/zfspool
-          Where=/mnt/zfspool
-          Type=nfs
-      - name: mnt-configs.mount
-        runtime: true
-        command: start
-        content: |
-          [Mount]
-          What=192.168.10.10:/mnt/zfspool/configs
-          Where=/mnt/configs
-          Type=nfs
-      - name: 10-static.network
-        runtime: true
-        content: |
-          [Match]
-          Name=enp2s0
-          
-          [Network]
-          DNS=192.168.10.1
-          Address=192.168.10.25/24
-          Gateway=192.168.10.1
-      - name: sabnzbd.service
-        runtime: true
-        command: start
-        content: |
-          [Unit]
-          Description=sabnzbd container
-          Author=Me
-          After=docker.service
-          After=mnt-zfspool.mount
-          
-          [Service]
-          Restart=always
-          TimeoutStartSec=0
-          ExecStartPre=-/usr/bin/docker kill sabnzbd
-          ExecStartPre=-/usr/bin/docker rm sabnzbd
-          ExecStartPre=/usr/bin/docker pull timhaak/sabnzbd
-          ExecStart=/usr/bin/docker run --cpuset="0-3" -e "PATH=/config/par2_custom:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" --name=sabnzbd -h sabnzbd -v /mnt/zfspool/configs/sabnzbd:/config -v /mnt/zfspool:/mnt/zfspool -p 8080:8080 -p 9090:9090 timhaak/sabnzbd
-          ExecStop=/usr/bin/docker stop -t 2 sabnzbd
-          
-          [Install]
-          WantedBy=multi-user.target
-      - name: sickbeard.service
-        runtime: true
-        command: start
-        content: |
-          [Unit]
-          Description=sickbeard container
-          Author=Me
-          After=docker.service
-          After=mnt-zfspool.mount
-          
-          [Service]
-          Restart=always
-          TimeoutStartSec=0
-          ExecStartPre=-/usr/bin/docker kill sickbeard
-          ExecStartPre=-/usr/bin/docker rm sickbeard
-          ExecStartPre=/usr/bin/docker pull timhaak/sickbeard
-          ExecStart=/usr/bin/docker run --name=sickbeard -h sickbeard -v /mnt/zfspool/configs/sickbeard:/config -v /mnt/zfspool:/mnt/zfspool -p 8081:8081 timhaak/sickbeard
-          ExecStop=/usr/bin/docker stop -t 2 sickbeard
-          
-          [Install]
-          WantedBy=multi-user.target
-      - name: couchpotato.service
-        runtime: true
-        command: start
-        content: |
-          [Unit]
-          Description=couchpotato container
-          Author=Me
-          After=docker.service
-          After=mnt-zfspool.mount
-          
-          [Service]
-          Restart=always
-          TimeoutStartSec=0
-          ExecStartPre=-/usr/bin/docker kill couchpotato
-          ExecStartPre=-/usr/bin/docker rm couchpotato
-          ExecStartPre=/usr/bin/docker pull needo/couchpotato
-          ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
-          ExecStop=/usr/bin/docker stop -t 2 couchpotato
-          
-          [Install]
-          WantedBy=multi-user.target
-      - name: openvpn.service
-        runtime: true
-        command: start
-        content: |
-          [Unit]
-          Description=openvpn container
-          Author=Me
-          After=docker.service
-          After=mnt-zfspool.mount
-          
-          [Service]
-          Restart=always
-          TimeoutStartSec=0
-          ExecStartPre=-/usr/bin/docker kill openvpn
-          ExecStartPre=-/usr/bin/docker rm openvpn
-          ExecStartPre=/usr/bin/docker pull jpetazzo/openvpn
-          ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
-          ExecStop=/usr/bin/docker stop -t 2 openvpn
-          
-          [Install]
-          WantedBy=multi-user.target
+  update:
+    reboot-strategy: reboot
+  units:
+    - name: etcd.service
+      command: start
+    - name: rpc-statd.service
+      runtime: true
+      command: start
+    - name: mnt-zfspool.mount
+      runtime: true
+      command: start
+      content: |
+        [Mount]
+        What=192.168.10.10:/mnt/zfspool
+        Where=/mnt/zfspool
+        Type=nfs
+    - name: mnt-configs.mount
+      runtime: true
+      command: start
+      content: |
+        [Mount]
+        What=192.168.10.10:/mnt/zfspool/configs
+        Where=/mnt/configs
+        Type=nfs
+    - name: 10-static.network
+      runtime: true
+      content: |
+        [Match]
+        Name=enp2s0
+        
+        [Network]
+        DNS=192.168.10.1
+        Address=192.168.10.25/24
+        Gateway=192.168.10.1
+    - name: sabnzbd.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=sabnzbd container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill sabnzbd
+        ExecStartPre=-/usr/bin/docker rm sabnzbd
+        ExecStartPre=/usr/bin/docker pull timhaak/sabnzbd
+        ExecStart=/usr/bin/docker run --cpuset="0-3" -e "PATH=/config/par2_custom:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" --name=sabnzbd -h sabnzbd -v /mnt/zfspool/configs/sabnzbd:/config -v /mnt/zfspool:/mnt/zfspool -p 8080:8080 -p 9090:9090 timhaak/sabnzbd
+        ExecStop=/usr/bin/docker stop -t 2 sabnzbd
+        
+        [Install]
+        WantedBy=multi-user.target
+    - name: sickbeard.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=sickbeard container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill sickbeard
+        ExecStartPre=-/usr/bin/docker rm sickbeard
+        ExecStartPre=/usr/bin/docker pull timhaak/sickbeard
+        ExecStart=/usr/bin/docker run --name=sickbeard -h sickbeard -v /mnt/zfspool/configs/sickbeard:/config -v /mnt/zfspool:/mnt/zfspool -p 8081:8081 timhaak/sickbeard
+        ExecStop=/usr/bin/docker stop -t 2 sickbeard
+        
+        [Install]
+        WantedBy=multi-user.target
+    - name: couchpotato.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=couchpotato container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill couchpotato
+        ExecStartPre=-/usr/bin/docker rm couchpotato
+        ExecStartPre=/usr/bin/docker pull needo/couchpotato
+        ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
+        ExecStop=/usr/bin/docker stop -t 2 couchpotato
+        
+        [Install]
+        WantedBy=multi-user.target
+    - name: openvpn.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=openvpn container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill openvpn
+        ExecStartPre=-/usr/bin/docker rm openvpn
+        ExecStartPre=/usr/bin/docker pull jpetazzo/openvpn
+        ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
+        ExecStop=/usr/bin/docker stop -t 2 openvpn
+        
+        [Install]
+        WantedBy=multi-user.target
