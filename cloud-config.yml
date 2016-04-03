@@ -147,3 +147,24 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
+    - name: plex-server.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=plex-server container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill plexserver
+        ExecStartPre=-/usr/bin/docker rm plexserver
+        ExecStartPre=/usr/bin/docker pull linuxserver/plex
+        ExecStart=/usr/bin/docker run --net=host --cpuset="0-3" --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
+        ExecStop=/usr/bin/docker stop -t 2 plexserver
+        
+        [Install]
+        WantedBy=multi-user.target
