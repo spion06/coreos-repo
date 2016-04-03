@@ -105,27 +105,27 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
-    - name: openvpn.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=openvpn container
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill openvpn
-        ExecStartPre=-/usr/bin/docker rm openvpn
-        ExecStartPre=/usr/bin/docker pull jpetazzo/openvpn
-        ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
-        ExecStop=/usr/bin/docker stop -t 2 openvpn
-        
-        [Install]
-        WantedBy=multi-user.target
+#    - name: openvpn.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=openvpn container
+#        Author=Me
+#        After=docker.service
+#        After=mnt-zfspool.mount
+#        
+#        [Service]
+#        Restart=always
+#        TimeoutStartSec=0
+#        ExecStartPre=-/usr/bin/docker kill openvpn
+#        ExecStartPre=-/usr/bin/docker rm openvpn
+#        ExecStartPre=/usr/bin/docker pull jpetazzo/openvpn
+#        ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
+#        ExecStop=/usr/bin/docker stop -t 2 openvpn
+#        
+#        [Install]
+#        WantedBy=multi-user.target
     - name: emby-server.service
       runtime: true
       command: start
