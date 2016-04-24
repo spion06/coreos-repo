@@ -12,6 +12,7 @@ users:
     groups:
       - sudo
       - docker
+    coreos-ssh-import-github: predatorian
 coreos:
   update:
     reboot-strategy: reboot
