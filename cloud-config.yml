@@ -13,10 +13,16 @@ users:
       - sudo
       - docker
     coreos-ssh-import-github: predatorian
+write_files:
+  - path: /etc/sysctl.d/tcp_frto.conf
+    content: |
+      net.ipv4.tcp_frto=0
 coreos:
   update:
     reboot-strategy: reboot
   units:
+    - name: systemd-sysctl.service
+      command: restart
     - name: etcd.service
       command: start
     - name: rpc-statd.service
