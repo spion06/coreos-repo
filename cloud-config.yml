@@ -90,6 +90,27 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
+    - name: sickrage.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=sickrage container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill sickrage
+        ExecStartPre=-/usr/bin/docker rm sickrage
+        ExecStartPre=/usr/bin/docker pull timhaak/sickrage
+        ExecStart=/usr/bin/docker run --name=sickrage -h sickrage -v /mnt/zfspool/configs/sickrage:/config -v /mnt/zfspool:/mnt/zfspool -p 8082:8081 timhaak/sickrage
+        ExecStop=/usr/bin/docker stop -t 2 sickrage
+        
+        [Install]
+        WantedBy=multi-user.target
     - name: couchpotato.service
       runtime: true
       command: start
