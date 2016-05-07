@@ -6,13 +6,11 @@ users:
     groups:
       - sudo
       - docker
-    coreos-ssh-import-github: spion06
   - name: predatorian
     passwd: $6$wEwuL/84jh$g13dlxCaCFK5ClNnLlCWurFZ2TPddQcOzvCi259VwkId1z9jqT4DjjNa1AuyBzVigdIzdh5YPzg5WP5gy7a6K. 
     groups:
       - sudo
       - docker
-    coreos-ssh-import-github: predatorian
 write_files:
   - path: /etc/sysctl.d/tcp_frto.conf
     content: |
