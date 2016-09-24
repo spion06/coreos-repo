@@ -211,9 +211,7 @@ coreos:
         [Install]
         WantedBy=multi-user.target
          
-        [Service]
-        Environment=IMAGE=meltwater/docker-cleanup:latest NAME=docker-cleanup
-         
+        [Service]         
         # Allow docker pull to take some time
         TimeoutStartSec=600
          
@@ -222,14 +220,13 @@ coreos:
         Restart=always
         RestartSec=15
          
-        ExecStartPre=-/usr/bin/docker kill $NAME
-        ExecStartPre=-/usr/bin/docker rm $NAME
-        ExecStartPre=-/bin/sh -c 'if ! docker images | tr -s " " : | grep "^${IMAGE}:"; then docker pull "${IMAGE}"; fi'
+        ExecStartPre=-/usr/bin/docker kill docker-cleanup
+        ExecStartPre=-/usr/bin/docker rm docker-cleanup
+        ExecStartPre=-/bin/sh -c 'if ! docker images | tr -s " " : | grep "^$meltwater/docker-cleanup:latest:"; then docker pull "meltwater/docker-cleanup:latest"; fi'
         ExecStart=/usr/bin/docker run \
           -v /var/run/docker.sock:/var/run/docker.sock:rw \
           -v /var/lib/docker:/var/lib/docker:rw \
-          --name=${NAME} \
-          $IMAGE
+          --name=docker-cleanup meltwater/docker-cleanup:latest
          
-        ExecStop=/usr/bin/docker stop $NAME
+        ExecStop=/usr/bin/docker stop docker-cleanup
 
