@@ -110,7 +110,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill sickrage
         ExecStartPre=-/usr/bin/docker rm sickrage
         ExecStartPre=/usr/bin/docker pull timhaak/sickrage
-        ExecStart=/usr/bin/docker run --name=sickrage -h sickrage -v /mnt/zfspool/configs/sickrage:/config -v /mnt/zfspool:/mnt/zfspool -p 8082:8081 timhaak/sickrage
+        ExecStart=/usr/bin/docker run --name=sickrage -h sickrage -v /mnt/zfspool/configs/sickrage:/config -v /mnt/zfspool:/mnt/zfspool -p 8082:8082 timhaak/sickrage
         ExecStop=/usr/bin/docker stop -t 2 sickrage
         
         [Install]
@@ -229,4 +229,3 @@ coreos:
           --name=docker-cleanup meltwater/docker-cleanup:latest
          
         ExecStop=/usr/bin/docker stop docker-cleanup
-
