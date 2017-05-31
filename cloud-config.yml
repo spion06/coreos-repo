@@ -194,7 +194,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill plexserver
         ExecStartPre=-/usr/bin/docker rm plexserver
         ExecStartPre=/usr/bin/docker pull linuxserver/plex
-        ExecStart=/usr/bin/docker run --net=host -e PGID=1001 PUID=1001 -e VERSION=latest --cpuset-cpus="0-3" --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
+        ExecStart=/usr/bin/docker run --net=host -e PGID=1001 -e PUID=1001 -e VERSION=latest --cpuset-cpus="0-3" --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
         ExecStop=/usr/bin/docker stop -t 2 plexserver
         
         [Install]
