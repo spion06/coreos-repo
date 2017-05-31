@@ -73,27 +73,27 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
-    - name: sickbeard.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=sickbeard container
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill sickbeard
-        ExecStartPre=-/usr/bin/docker rm sickbeard
-        ExecStartPre=/usr/bin/docker pull timhaak/sickbeard
-        ExecStart=/usr/bin/docker run --name=sickbeard -h sickbeard -v /mnt/zfspool/configs/sickbeard:/config -v /mnt/zfspool:/mnt/zfspool -p 8081:8081 timhaak/sickbeard
-        ExecStop=/usr/bin/docker stop -t 2 sickbeard
-        
-        [Install]
-        WantedBy=multi-user.target
+#    - name: sickbeard.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=sickbeard container
+#        Author=Me
+#        After=docker.service
+#        After=mnt-zfspool.mount
+#        
+#        [Service]
+#        Restart=always
+#        TimeoutStartSec=0
+#        ExecStartPre=-/usr/bin/docker kill sickbeard
+#        ExecStartPre=-/usr/bin/docker rm sickbeard
+#        ExecStartPre=/usr/bin/docker pull timhaak/sickbeard
+#        ExecStart=/usr/bin/docker run --name=sickbeard -h sickbeard -v /mnt/zfspool/configs/sickbeard:/config -v /mnt/zfspool:/mnt/zfspool -p 8081:8081 timhaak/sickbeard
+#        ExecStop=/usr/bin/docker stop -t 2 sickbeard
+#        
+#        [Install]
+#        WantedBy=multi-user.target
     - name: sickrage.service
       runtime: true
       command: start
