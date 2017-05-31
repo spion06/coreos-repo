@@ -157,27 +157,27 @@ coreos:
 #        
 #        [Install]
 #        WantedBy=multi-user.target
-    - name: emby-server.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=emby-server container
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill embyserver
-        ExecStartPre=-/usr/bin/docker rm embyserver
-        ExecStartPre=/usr/bin/docker pull emby/embyserver
-        ExecStart=/usr/bin/docker run --net=host --cpuset-cpus="0-3" --name=embyserver -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P emby/embyserver
-        ExecStop=/usr/bin/docker stop -t 2 embyserver
-        
-        [Install]
-        WantedBy=multi-user.target
+#    - name: emby-server.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=emby-server container
+#        Author=Me
+#        After=docker.service
+#        After=mnt-zfspool.mount
+#        
+#        [Service]
+#        Restart=always
+#        TimeoutStartSec=0
+#        ExecStartPre=-/usr/bin/docker kill embyserver
+#        ExecStartPre=-/usr/bin/docker rm embyserver
+#        ExecStartPre=/usr/bin/docker pull emby/embyserver
+#        ExecStart=/usr/bin/docker run --net=host --cpuset-cpus="0-3" --name=embyserver -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P emby/embyserver
+#        ExecStop=/usr/bin/docker stop -t 2 embyserver
+#        
+#        [Install]
+#        WantedBy=multi-user.target
     - name: plex-server.service
       runtime: true
       command: start
@@ -194,7 +194,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill plexserver
         ExecStartPre=-/usr/bin/docker rm plexserver
         ExecStartPre=/usr/bin/docker pull linuxserver/plex
-        ExecStart=/usr/bin/docker run --net=host -e VERSION=latest --cpuset-cpus="0-3" --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
+        ExecStart=/usr/bin/docker run --net=host -e PGID=1001 PUID=1001 -e VERSION=latest --cpuset-cpus="0-3" --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
         ExecStop=/usr/bin/docker stop -t 2 plexserver
         
         [Install]
