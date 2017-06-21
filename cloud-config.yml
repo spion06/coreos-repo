@@ -21,8 +21,6 @@ coreos:
   units:
     - name: systemd-sysctl.service
       command: restart
-    - name: etcd.service
-      command: start
     - name: rpc-statd.service
       runtime: true
       command: start
