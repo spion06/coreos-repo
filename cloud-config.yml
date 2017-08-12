@@ -129,7 +129,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill couchpotato
         ExecStartPre=-/usr/bin/docker rm couchpotato
         ExecStartPre=/usr/bin/docker pull needo/couchpotato
-        ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
+        ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -e EDGE=1 -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
         ExecStop=/usr/bin/docker stop -t 2 couchpotato
         
         [Install]
