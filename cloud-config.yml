@@ -171,7 +171,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill embyserver
         ExecStartPre=-/usr/bin/docker rm embyserver
         ExecStartPre=/usr/bin/docker pull emby/embyserver
-        ExecStart=/usr/bin/docker run --net=host --cpuset-cpus="0-3" --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P emby/embyserver
+        ExecStart=/usr/bin/docker run --net=host --cpuset-cpus="0-3" --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage -P emby/embyserver
         ExecStop=/usr/bin/docker stop -t 2 embyserver
         
         [Install]
