@@ -252,6 +252,6 @@ coreos:
         ExecStartPre=-/usr/bin/docker rm factorio-server
         ExecStartPre=/usr/bin/docker pull dtandersen/factorio:0.16
         ExecStart=/usr/bin/docker run \
-          --name=factorio-server -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
+          --name=factorio-server -p 34197:34197/udp -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
          
         ExecStop=/usr/bin/docker stop factorio-server
