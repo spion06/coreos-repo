@@ -227,3 +227,31 @@ coreos:
           --name=docker-cleanup meltwater/docker-cleanup:latest
          
         ExecStop=/usr/bin/docker stop docker-cleanup
+    - name: factorio-server.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=Factorio server
+        After=docker.service
+        Requires=docker.service
+         
+        [Install]
+        WantedBy=multi-user.target
+         
+        [Service]         
+        # Allow docker pull to take some time
+        TimeoutStartSec=600
+         
+        # Restart on failures
+        KillMode=none
+        Restart=always
+        RestartSec=15
+         
+        ExecStartPre=-/usr/bin/docker kill factorio-server
+        ExecStartPre=-/usr/bin/docker rm factorio-server
+        ExecStartPre=/usr/bin/docker pull dtandersen/factorio:0.16
+        ExecStart=/usr/bin/docker run \
+          --name=factorio-server -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
+         
+        ExecStop=/usr/bin/docker stop factorio-server
