@@ -44,7 +44,7 @@ coreos:
       runtime: true
       content: |
         [Match]
-        Name=enp2s0
+        Name=enp5s0
         
         [Network]
         DNS=192.168.10.1
