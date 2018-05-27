@@ -164,7 +164,6 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-        After=nvidia-driver.service
         
         [Service]
         Restart=always
@@ -186,7 +185,6 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-        After=nvidia-driver.service
         
         [Service]
         Restart=always
