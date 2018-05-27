@@ -164,6 +164,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
+        After=nvidia-driver.service
         
         [Service]
         Restart=always
@@ -171,7 +172,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill embyserver
         ExecStartPre=-/usr/bin/docker rm embyserver
         ExecStartPre=/usr/bin/docker pull emby/embyserver
-        ExecStart=/usr/bin/docker run --net=host --cpuset-cpus="0-3" --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage -P emby/embyserver
+        ExecStart=/usr/bin/docker run --net=host --device /dev/nvidia0 --device /dev/nvidiactl --cpus=8 --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage -P emby/embyserver
         ExecStop=/usr/bin/docker stop -t 2 embyserver
         
         [Install]
@@ -185,6 +186,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
+        After=nvidia-driver.service
         
         [Service]
         Restart=always
@@ -192,8 +194,29 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill plexserver
         ExecStartPre=-/usr/bin/docker rm plexserver
         ExecStartPre=/usr/bin/docker pull linuxserver/plex
-        ExecStart=/usr/bin/docker run --net=host -e PGID=1001 -e PUID=1001 -e VERSION=latest --cpuset-cpus="0-3" --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
+        ExecStart=/usr/bin/docker run --net=host --device /dev/nvidia0 --device /dev/nvidiactl --cpus=8 -e PGID=1001 -e PUID=1001 -e VERSION=latest --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
         ExecStop=/usr/bin/docker stop -t 2 plexserver
+        
+        [Install]
+        WantedBy=multi-user.target
+    - name: nvidia-driver.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=nvidia driver installation
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill nvidia-driver
+        ExecStartPre=-/usr/bin/docker rm nvidia-driver
+        ExecStartPre=/usr/bin/docker pull shelmangroup/coreos-nvidia-driver-installer:latest
+        ExecStart=/usr/bin/docker run --privileged --name=nvidia-driver -v /:/root -v /dev:/dev -v /opt/nvidia:/usr/local/nvidia shelmangroup/coreos-nvidia-driver-installer:latest
+        ExecStop=/usr/bin/docker stop -t 2 nvidia-driver
         
         [Install]
         WantedBy=multi-user.target
