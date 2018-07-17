@@ -171,7 +171,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill embyserver
         ExecStartPre=-/usr/bin/docker rm embyserver
         ExecStartPre=/usr/bin/docker pull emby/embyserver
-        ExecStart=/usr/bin/docker run --net=host --device /dev/nvidia0 --device /dev/nvidiactl --cpus=8 --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage -P emby/embyserver
+        ExecStart=/usr/bin/docker run --net=host --cpus=8 --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage -P emby/embyserver
         ExecStop=/usr/bin/docker stop -t 2 embyserver
         
         [Install]
@@ -192,7 +192,7 @@ coreos:
         ExecStartPre=-/usr/bin/docker kill plexserver
         ExecStartPre=-/usr/bin/docker rm plexserver
         ExecStartPre=/usr/bin/docker pull linuxserver/plex
-        ExecStart=/usr/bin/docker run --net=host --device /dev/nvidia0 --device /dev/nvidiactl --cpus=8 -e PGID=1001 -e PUID=1001 -e VERSION=latest --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
+        ExecStart=/usr/bin/docker run --net=host --cpus=8 -e PGID=1001 -e PUID=1001 -e VERSION=latest --name=plexserver -v /mnt/zfspool/configs/plexserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage:ro -P linuxserver/plex
         ExecStop=/usr/bin/docker stop -t 2 plexserver
         
         [Install]
