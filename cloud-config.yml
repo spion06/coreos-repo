@@ -197,27 +197,27 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
-    - name: nvidia-driver.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=nvidia driver installation
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill nvidia-driver
-        ExecStartPre=-/usr/bin/docker rm nvidia-driver
-        ExecStartPre=/usr/bin/docker pull shelmangroup/coreos-nvidia-driver-installer:latest
-        ExecStart=/usr/bin/docker run --privileged --name=nvidia-driver -v /:/root -v /dev:/dev -v /opt/nvidia:/usr/local/nvidia shelmangroup/coreos-nvidia-driver-installer:latest
-        ExecStop=/usr/bin/docker stop -t 2 nvidia-driver
-        
-        [Install]
-        WantedBy=multi-user.target
+        #    - name: nvidia-driver.service
+        #      runtime: true
+        #      command: start
+        #      content: |
+        #        [Unit]
+        #        Description=nvidia driver installation
+        #        Author=Me
+        #        After=docker.service
+        #        After=mnt-zfspool.mount
+        #        
+        #        [Service]
+        #        Restart=always
+        #        TimeoutStartSec=0
+        #        ExecStartPre=-/usr/bin/docker kill nvidia-driver
+        #        ExecStartPre=-/usr/bin/docker rm nvidia-driver
+        #        ExecStartPre=/usr/bin/docker pull shelmangroup/coreos-nvidia-driver-installer:latest
+        #        ExecStart=/usr/bin/docker run --privileged --name=nvidia-driver -v /:/root -v /dev:/dev -v /opt/nvidia:/usr/local/nvidia shelmangroup/coreos-nvidia-driver-installer:latest
+        #        ExecStop=/usr/bin/docker stop -t 2 nvidia-driver
+        #        
+        #        [Install]
+        #        WantedBy=multi-user.target
     - name: docker-cleanup.service
       runtime: true
       command: start
@@ -276,3 +276,38 @@ coreos:
           --name=factorio-server -p 34197:34197/udp -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
          
         ExecStop=/usr/bin/docker stop factorio-server
+    - name: haproxy.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=haproxy
+        After=docker.service
+        Requires=docker.service
+         
+        [Install]
+        WantedBy=multi-user.target
+         
+        [Service]         
+        # Allow docker pull to take some time
+        TimeoutStartSec=600
+         
+        # Restart on failures
+        KillMode=none
+        Restart=always
+        RestartSec=15
+         
+        ExecStartPre=-/usr/bin/docker kill haproxy-certbot
+        ExecStartPre=-/usr/bin/docker rm haproxy-certbot
+        ExecStartPre=/usr/bin/docker pull nmarus/haproxy-certbot
+        ExecStart=/usr/bin/docker run -d \
+          --name haproxy-certbot \
+          --cap-add=NET_ADMIN
+          -p 80:80 \
+          -p 443:443 \
+          -v /mnt/configs/haproxy/config:/config \
+          -v /mnt/configs/letsencrypt:/etc/letsencrypt \
+          -v /mnt/configs/certs.d:/usr/local/etc/haproxy/certs.d \
+          nmarus/haproxy-certbot
+         
+        ExecStop=/usr/bin/docker stop haproxy-certbot
