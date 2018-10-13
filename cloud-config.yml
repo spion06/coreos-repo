@@ -284,30 +284,30 @@ coreos:
         Description=haproxy
         After=docker.service
         Requires=docker.service
-         
+
         [Install]
         WantedBy=multi-user.target
-         
-        [Service]         
+
+        [Service]
         # Allow docker pull to take some time
         TimeoutStartSec=600
-         
+
         # Restart on failures
         KillMode=none
         Restart=always
         RestartSec=15
-         
+
         ExecStartPre=-/usr/bin/docker kill haproxy-certbot
         ExecStartPre=-/usr/bin/docker rm haproxy-certbot
         ExecStartPre=/usr/bin/docker pull nmarus/haproxy-certbot
-        ExecStart=/usr/bin/docker run -d \
+        ExecStart=/usr/bin/docker run \
           --name haproxy-certbot \
-          --cap-add=NET_ADMIN
+          --cap-add=NET_ADMIN \
           -p 80:80 \
           -p 443:443 \
           -v /mnt/configs/haproxy/config:/config \
-          -v /mnt/configs/letsencrypt:/etc/letsencrypt \
-          -v /mnt/configs/certs.d:/usr/local/etc/haproxy/certs.d \
+          -v /mnt/configs/haproxy/letsencrypt:/etc/letsencrypt \
+          -v /mnt/configs/haproxy/certs.d:/usr/local/etc/haproxy/certs.d \
           nmarus/haproxy-certbot
-         
+
         ExecStop=/usr/bin/docker stop haproxy-certbot
