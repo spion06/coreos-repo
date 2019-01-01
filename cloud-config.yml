@@ -7,7 +7,7 @@ users:
       - sudo
       - docker
   - name: predatorian
-    passwd: $6$wEwuL/84jh$g13dlxCaCFK5ClNnLlCWurFZ2TPddQcOzvCi259VwkId1z9jqT4DjjNa1AuyBzVigdIzdh5YPzg5WP5gy7a6K.
+    passwd: $6$wEwuL/84jh$g13dlxCaCFK5ClNnLlCWurFZ2TPddQcOzvCi259VwkId1z9jqT4DjjNa1AuyBzVigdIzdh5YPzg5WP5gy7a6K. 
     groups:
       - sudo
       - docker
@@ -52,7 +52,7 @@ coreos:
       content: |
         [Unit]
         After=mnt-zfspool.mount
-
+        
         [Service]
         ExecStart=/usr/bin/iscsiadm --mode node --targetname iqn.2011-03.example.org.istgt:sonarr-data --portal 192.168.10.10:3260 --login
     - name: mnt-zfspool-configs-sonarrserver-data.mount
@@ -71,7 +71,7 @@ coreos:
       content: |
         [Match]
         Name=enp5s0
-
+        
         [Network]
         DNS=192.168.10.1
         Address=192.168.10.25/24
@@ -85,7 +85,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-
+        
         [Service]
         Restart=always
         TimeoutStartSec=0
@@ -94,7 +94,7 @@ coreos:
         ExecStartPre=/usr/bin/docker pull linuxserver/sabnzbd
         ExecStart=/usr/bin/docker run --cpuset-cpus="0-3" -e "TZ=America/Chicago" -e PGID=1001 -e PUID=1001 --name=sabnzbd -h sabnzbd -v /mnt/zfspool/configs/sabnzbd:/config -v /mnt/zfspool:/mnt/zfspool -p 8080:8080 -p 9090:9090 linuxserver/sabnzbd
         ExecStop=/usr/bin/docker stop -t 2 sabnzbd
-
+        
         [Install]
         WantedBy=multi-user.target
 #    - name: sickbeard.service
@@ -106,7 +106,7 @@ coreos:
 #        Author=Me
 #        After=docker.service
 #        After=mnt-zfspool.mount
-#
+#        
 #        [Service]
 #        Restart=always
 #        TimeoutStartSec=0
@@ -115,7 +115,7 @@ coreos:
 #        ExecStartPre=/usr/bin/docker pull timhaak/sickbeard
 #        ExecStart=/usr/bin/docker run --name=sickbeard -h sickbeard -v /mnt/zfspool/configs/sickbeard:/config -v /mnt/zfspool:/mnt/zfspool -p 8081:8081 timhaak/sickbeard
 #        ExecStop=/usr/bin/docker stop -t 2 sickbeard
-#
+#        
 #        [Install]
 #        WantedBy=multi-user.target
     - name: sickrage.service
@@ -127,7 +127,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-
+        
         [Service]
         Restart=always
         TimeoutStartSec=0
@@ -136,7 +136,7 @@ coreos:
         ExecStartPre=/usr/bin/docker pull timhaak/sickrage
         ExecStart=/usr/bin/docker run --name=sickrage -h sickrage -v /mnt/zfspool/configs/sickrage:/config -v /mnt/zfspool:/mnt/zfspool -p 8082:8082 timhaak/sickrage
         ExecStop=/usr/bin/docker stop -t 2 sickrage
-
+        
         [Install]
         WantedBy=multi-user.target
     - name: couchpotato.service
@@ -148,7 +148,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-
+        
         [Service]
         Restart=always
         TimeoutStartSec=0
@@ -157,7 +157,7 @@ coreos:
         ExecStartPre=/usr/bin/docker pull needo/couchpotato
         ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -e EDGE=1 -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
         ExecStop=/usr/bin/docker stop -t 2 couchpotato
-
+        
         [Install]
         WantedBy=multi-user.target
 #    - name: openvpn.service
@@ -169,7 +169,7 @@ coreos:
 #        Author=Me
 #        After=docker.service
 #        After=mnt-zfspool.mount
-#
+#        
 #        [Service]
 #        Restart=always
 #        TimeoutStartSec=0
@@ -178,7 +178,7 @@ coreos:
 #        ExecStartPre=/usr/bin/docker pull jpetazzo/openvpn
 #        ExecStart=/usr/bin/docker run --privileged -p 1194:1194/udp -p 443:443/tcp -v /mnt/zfspool/configs/openvpn:/etc/openvpn jpetazzo/openvpn
 #        ExecStop=/usr/bin/docker stop -t 2 openvpn
-#
+#        
 #        [Install]
 #        WantedBy=multi-user.target
     - name: emby-server.service
@@ -190,7 +190,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-
+        
         [Service]
         Restart=always
         TimeoutStartSec=0
@@ -199,7 +199,7 @@ coreos:
         ExecStartPre=/usr/bin/docker pull emby/embyserver
         ExecStart=/usr/bin/docker run --net=host --cpus=8 --name=embyserver -e "APP_UID=1001" -e "APP_GID=1001" -e "EDGE=1" -v /mnt/zfspool/configs/embyserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool/storage:/mnt/storage -P emby/embyserver
         ExecStop=/usr/bin/docker stop -t 2 embyserver
-
+        
         [Install]
         WantedBy=multi-user.target
     - name: sonarr-server.service
@@ -211,7 +211,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
-
+        
         [Service]
         Restart=always
         TimeoutStartSec=0
@@ -220,7 +220,7 @@ coreos:
         ExecStartPre=/usr/bin/docker pull linuxserver/sonarr
         ExecStart=/usr/bin/docker run -p 8989:8989 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=sonarrserver -v /mnt/zfspool/configs/sonarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool linuxserver/sonarr
         ExecStop=/usr/bin/docker stop -t 2 sonarrserver
-
+        
         [Install]
         WantedBy=multi-user.target
     - name: docker-cleanup.service
@@ -231,19 +231,19 @@ coreos:
         Description=Cleanup of exited containers and unused images/volumes
         After=docker.service
         Requires=docker.service
-
+         
         [Install]
         WantedBy=multi-user.target
-
-        [Service]
+         
+        [Service]         
         # Allow docker pull to take some time
         TimeoutStartSec=600
-
+         
         # Restart on failures
         KillMode=none
         Restart=always
         RestartSec=15
-
+         
         ExecStartPre=-/usr/bin/docker kill docker-cleanup
         ExecStartPre=-/usr/bin/docker rm docker-cleanup
         ExecStartPre=-/bin/sh -c 'if ! docker images | tr -s " " : | grep "^$meltwater/docker-cleanup:latest:"; then docker pull "meltwater/docker-cleanup:latest"; fi'
@@ -251,7 +251,7 @@ coreos:
           -v /var/run/docker.sock:/var/run/docker.sock:rw \
           -v /var/lib/docker:/var/lib/docker:rw \
           --name=docker-cleanup meltwater/docker-cleanup:latest
-
+         
         ExecStop=/usr/bin/docker stop docker-cleanup
     - name: factorio-server.service
       runtime: true
@@ -261,25 +261,25 @@ coreos:
         Description=Factorio server
         After=docker.service
         Requires=docker.service
-
+         
         [Install]
         WantedBy=multi-user.target
-
-        [Service]
+         
+        [Service]         
         # Allow docker pull to take some time
         TimeoutStartSec=600
-
+         
         # Restart on failures
         KillMode=none
         Restart=always
         RestartSec=15
-
+         
         ExecStartPre=-/usr/bin/docker kill factorio-server
         ExecStartPre=-/usr/bin/docker rm factorio-server
         ExecStartPre=/usr/bin/docker pull dtandersen/factorio:0.16
         ExecStart=/usr/bin/docker run \
           --name=factorio-server -p 34197:34197/udp -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
-
+         
         ExecStop=/usr/bin/docker stop factorio-server
     - name: haproxy.service
       runtime: true
@@ -289,19 +289,19 @@ coreos:
         Description=haproxy
         After=docker.service
         Requires=docker.service
-
+         
         [Install]
         WantedBy=multi-user.target
-
-        [Service]
+         
+        [Service]         
         # Allow docker pull to take some time
         TimeoutStartSec=600
-
+         
         # Restart on failures
         KillMode=none
         Restart=always
         RestartSec=15
-
+         
         ExecStartPre=-/usr/bin/docker kill haproxy-certbot
         ExecStartPre=-/usr/bin/docker rm haproxy-certbot
         ExecStartPre=/usr/bin/docker pull nmarus/haproxy-certbot
@@ -314,5 +314,5 @@ coreos:
           -v /mnt/configs/haproxy/letsencrypt:/etc/letsencrypt \
           -v /mnt/configs/haproxy/certs.d:/usr/local/etc/haproxy/certs.d \
           nmarus/haproxy-certbot
-
+         
         ExecStop=/usr/bin/docker stop haproxy-certbot
