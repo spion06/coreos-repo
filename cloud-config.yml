@@ -54,7 +54,7 @@ coreos:
         After=mnt-zfspool.mount
         
         [Service]
-        ExecStart=/usr/bin/iscsiadm --mode node --targetname iqn.2011-03.example.org.istgt:sonarr-data --portal 192.168.10.10:3260 --login
+        ExecStart=/usr/sbin/iscsiadm --mode node --targetname iqn.2011-03.example.org.istgt:sonarr-data --portal 192.168.10.10:3260 --login
     - name: mnt-zfspool-configs-sonarrserver-data.mount
       runtime: true
       command: start
@@ -65,6 +65,17 @@ coreos:
         [Mount]
         What=/dev/disk/by-uuid/af0fb211-68ef-4309-b43a-7e4caa7a1794
         Where=/mnt/zfspool/configs/sonarrserver/data
+        Type=xfs
+    - name: mnt-zfspool-configs-radarrserver-data.mount
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        After=mnt-zfspool.mount
+        After=iscsi-login.service
+        [Mount]
+        What=/dev/disk/by-uuid/d76f9182-04c9-4e2d-887b-c2f12f6133b5
+        Where=/mnt/zfspool/configs/radarrserver/data
         Type=xfs
     - name: 10-static.network
       runtime: true
@@ -139,27 +150,27 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
-    - name: couchpotato.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=couchpotato container
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill couchpotato
-        ExecStartPre=-/usr/bin/docker rm couchpotato
-        ExecStartPre=/usr/bin/docker pull needo/couchpotato
-        ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -e EDGE=1 -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
-        ExecStop=/usr/bin/docker stop -t 2 couchpotato
-        
-        [Install]
-        WantedBy=multi-user.target
+#    - name: couchpotato.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=couchpotato container
+#        Author=Me
+#        After=docker.service
+#        After=mnt-zfspool.mount
+#        
+#        [Service]
+#        Restart=always
+#        TimeoutStartSec=0
+#        ExecStartPre=-/usr/bin/docker kill couchpotato
+#        ExecStartPre=-/usr/bin/docker rm couchpotato
+#        ExecStartPre=/usr/bin/docker pull needo/couchpotato
+#        ExecStart=/usr/bin/docker run --name=couchpotato -h couchpotato -e EDGE=1 -v /mnt/zfspool/configs/couchpotato/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool -p 5050:5050 needo/couchpotato
+#        ExecStop=/usr/bin/docker stop -t 2 couchpotato
+#        
+#        [Install]
+#        WantedBy=multi-user.target
 #    - name: openvpn.service
 #      runtime: true
 #      command: start
@@ -211,6 +222,7 @@ coreos:
         Author=Me
         After=docker.service
         After=mnt-zfspool.mount
+        After=mnt-zfspool-configs-sonarrserver-data.mount
         
         [Service]
         Restart=always
@@ -220,6 +232,28 @@ coreos:
         ExecStartPre=/usr/bin/docker pull linuxserver/sonarr
         ExecStart=/usr/bin/docker run -p 8989:8989 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=sonarrserver -v /mnt/zfspool/configs/sonarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool linuxserver/sonarr
         ExecStop=/usr/bin/docker stop -t 2 sonarrserver
+        
+        [Install]
+        WantedBy=multi-user.target
+    - name: radarr-server.service
+      runtime: true
+      command: start
+      content: |
+        [Unit]
+        Description=radarr-server container
+        Author=Me
+        After=docker.service
+        After=mnt-zfspool.mount
+        After=mnt-zfspool-configs-radarrserver-data.mount
+        
+        [Service]
+        Restart=always
+        TimeoutStartSec=0
+        ExecStartPre=-/usr/bin/docker kill radarrserver
+        ExecStartPre=-/usr/bin/docker rm radarrserver
+        ExecStartPre=/usr/bin/docker pull linuxserver/radarr
+        ExecStart=/usr/bin/docker run -p 7878:7878 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=radarrserver -v /mnt/zfspool/configs/radarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool --restart unless-stopped linuxserver/radarr
+        ExecStop=/usr/bin/docker stop -t 2 radarrserver
         
         [Install]
         WantedBy=multi-user.target
