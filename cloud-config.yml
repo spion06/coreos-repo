@@ -15,10 +15,11 @@ write_files:
   - path: /etc/sysctl.d/tcp_frto.conf
     content: |
       net.ipv4.tcp_frto=0
-  - path: /etc/iscsi/iscsid.conf
-    content: |
-      isns.address = 192.168.10.10
-      isns.port = 3260
+      net.bridge.bridge-nf-call-iptables=1
+#  - path: /etc/iscsi/iscsid.conf
+#    content: |
+#      isns.address = 192.168.10.10
+#      isns.port = 3260
 coreos:
   update:
     reboot-strategy: reboot
@@ -46,37 +47,37 @@ coreos:
         What=192.168.10.10:/mnt/zfspool/configs
         Where=/mnt/configs
         Type=nfs
-    - name: iscsi-login.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        After=mnt-zfspool.mount
-        
-        [Service]
-        ExecStart=/usr/sbin/iscsiadm --mode node --targetname iqn.2011-03.example.org.istgt:sonarr-data --portal 192.168.10.10:3260 --login
-    - name: mnt-zfspool-configs-sonarrserver-data.mount
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        After=mnt-zfspool.mount
-        After=iscsi-login.service
-        [Mount]
-        What=/dev/disk/by-uuid/af0fb211-68ef-4309-b43a-7e4caa7a1794
-        Where=/mnt/zfspool/configs/sonarrserver/data
-        Type=xfs
-    - name: mnt-zfspool-configs-radarrserver-data.mount
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        After=mnt-zfspool.mount
-        After=iscsi-login.service
-        [Mount]
-        What=/dev/disk/by-uuid/d76f9182-04c9-4e2d-887b-c2f12f6133b5
-        Where=/mnt/zfspool/configs/radarrserver/data
-        Type=xfs
+#    - name: iscsi-login.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        After=mnt-zfspool.mount
+#        
+#        [Service]
+#        ExecStart=/usr/sbin/iscsiadm --mode node --targetname iqn.2011-03.example.org.istgt:sonarr-data --portal 192.168.10.10:3260 --login
+#    - name: mnt-zfspool-configs-sonarrserver-data.mount
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        After=mnt-zfspool.mount
+#        After=iscsi-login.service
+#        [Mount]
+#        What=/dev/disk/by-uuid/af0fb211-68ef-4309-b43a-7e4caa7a1794
+#        Where=/mnt/zfspool/configs/sonarrserver/data
+#        Type=xfs
+#    - name: mnt-zfspool-configs-radarrserver-data.mount
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        After=mnt-zfspool.mount
+#        After=iscsi-login.service
+#        [Mount]
+#        What=/dev/disk/by-uuid/d76f9182-04c9-4e2d-887b-c2f12f6133b5
+#        Where=/mnt/zfspool/configs/radarrserver/data
+#        Type=xfs
     - name: 10-static.network
       runtime: true
       content: |
@@ -87,6 +88,9 @@ coreos:
         DNS=192.168.10.1
         Address=192.168.10.25/24
         Gateway=192.168.10.1
+        Address=192.168.10.26/24
+        Address=192.168.10.27/24
+        Address=192.168.10.28/24
     - name: sabnzbd.service
       runtime: true
       command: start
@@ -213,50 +217,50 @@ coreos:
         
         [Install]
         WantedBy=multi-user.target
-    - name: sonarr-server.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=sonarr-server container
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        After=mnt-zfspool-configs-sonarrserver-data.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill sonarrserver
-        ExecStartPre=-/usr/bin/docker rm sonarrserver
-        ExecStartPre=/usr/bin/docker pull linuxserver/sonarr
-        ExecStart=/usr/bin/docker run -p 8989:8989 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=sonarrserver -v /mnt/zfspool/configs/sonarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool linuxserver/sonarr
-        ExecStop=/usr/bin/docker stop -t 2 sonarrserver
-        
-        [Install]
-        WantedBy=multi-user.target
-    - name: radarr-server.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=radarr-server container
-        Author=Me
-        After=docker.service
-        After=mnt-zfspool.mount
-        After=mnt-zfspool-configs-radarrserver-data.mount
-        
-        [Service]
-        Restart=always
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill radarrserver
-        ExecStartPre=-/usr/bin/docker rm radarrserver
-        ExecStartPre=/usr/bin/docker pull linuxserver/radarr
-        ExecStart=/usr/bin/docker run -p 7878:7878 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=radarrserver -v /mnt/zfspool/configs/radarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool --restart unless-stopped linuxserver/radarr
-        ExecStop=/usr/bin/docker stop -t 2 radarrserver
-        
-        [Install]
-        WantedBy=multi-user.target
+#    - name: sonarr-server.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=sonarr-server container
+#        Author=Me
+#        After=docker.service
+#        After=mnt-zfspool.mount
+#        After=mnt-zfspool-configs-sonarrserver-data.mount
+#        
+#        [Service]
+#        Restart=always
+#        TimeoutStartSec=0
+#        ExecStartPre=-/usr/bin/docker kill sonarrserver
+#        ExecStartPre=-/usr/bin/docker rm sonarrserver
+#        ExecStartPre=/usr/bin/docker pull linuxserver/sonarr
+#        ExecStart=/usr/bin/docker run -p 8989:8989 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=sonarrserver -v /mnt/zfspool/configs/sonarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool linuxserver/sonarr
+#        ExecStop=/usr/bin/docker stop -t 2 sonarrserver
+#        
+#        [Install]
+#        WantedBy=multi-user.target
+#    - name: radarr-server.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=radarr-server container
+#        Author=Me
+#        After=docker.service
+#        After=mnt-zfspool.mount
+#        After=mnt-zfspool-configs-radarrserver-data.mount
+#        
+#        [Service]
+#        Restart=always
+#        TimeoutStartSec=0
+#        ExecStartPre=-/usr/bin/docker kill radarrserver
+#        ExecStartPre=-/usr/bin/docker rm radarrserver
+#        ExecStartPre=/usr/bin/docker pull linuxserver/radarr
+#        ExecStart=/usr/bin/docker run -p 7878:7878 -e PGID=1001 -e PUID=1001 -e "TZ=America/Chicago" --name=radarrserver -v /mnt/zfspool/configs/radarrserver/data:/config -v /etc/localtime:/etc/localtime:ro -v /mnt/zfspool:/mnt/zfspool --restart unless-stopped linuxserver/radarr
+#        ExecStop=/usr/bin/docker stop -t 2 radarrserver
+#        
+#        [Install]
+#        WantedBy=multi-user.target
     - name: docker-cleanup.service
       runtime: true
       command: start
@@ -287,34 +291,34 @@ coreos:
           --name=docker-cleanup meltwater/docker-cleanup:latest
          
         ExecStop=/usr/bin/docker stop docker-cleanup
-    - name: factorio-server.service
-      runtime: true
-      command: start
-      content: |
-        [Unit]
-        Description=Factorio server
-        After=docker.service
-        Requires=docker.service
-         
-        [Install]
-        WantedBy=multi-user.target
-         
-        [Service]         
-        # Allow docker pull to take some time
-        TimeoutStartSec=600
-         
-        # Restart on failures
-        KillMode=none
-        Restart=always
-        RestartSec=15
-         
-        ExecStartPre=-/usr/bin/docker kill factorio-server
-        ExecStartPre=-/usr/bin/docker rm factorio-server
-        ExecStartPre=/usr/bin/docker pull dtandersen/factorio:0.16
-        ExecStart=/usr/bin/docker run \
-          --name=factorio-server -p 34197:34197/udp -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
-         
-        ExecStop=/usr/bin/docker stop factorio-server
+#    - name: factorio-server.service
+#      runtime: true
+#      command: start
+#      content: |
+#        [Unit]
+#        Description=Factorio server
+#        After=docker.service
+#        Requires=docker.service
+#         
+#        [Install]
+#        WantedBy=multi-user.target
+#         
+#        [Service]         
+#        # Allow docker pull to take some time
+#        TimeoutStartSec=600
+#         
+#        # Restart on failures
+#        KillMode=none
+#        Restart=always
+#        RestartSec=15
+#         
+#        ExecStartPre=-/usr/bin/docker kill factorio-server
+#        ExecStartPre=-/usr/bin/docker rm factorio-server
+#        ExecStartPre=/usr/bin/docker pull dtandersen/factorio:0.16
+#        ExecStart=/usr/bin/docker run \
+#          --name=factorio-server -p 34197:34197/udp -v /mnt/zfspool/configs/factorio:/factorio dtandersen/factorio:0.16
+#         
+#        ExecStop=/usr/bin/docker stop factorio-server
     - name: haproxy.service
       runtime: true
       command: start
@@ -344,6 +348,7 @@ coreos:
           --cap-add=NET_ADMIN \
           -p 80:80 \
           -p 443:443 \
+          -p 192.168.10.25:55414:55414 \
           -v /mnt/configs/haproxy/config:/config \
           -v /mnt/configs/haproxy/letsencrypt:/etc/letsencrypt \
           -v /mnt/configs/haproxy/certs.d:/usr/local/etc/haproxy/certs.d \
